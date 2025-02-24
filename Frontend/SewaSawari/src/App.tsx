@@ -6,6 +6,7 @@ import VehicleOwnerRegister from './pages/register/VehicleOwnerRegistration';
 import Home from './pages/home/Home';
 import OwnerPage from './pages/ownerPage/OwnerPage';
 import Dashboard from './pages/dashboard/Dashboard';
+import OtpVerification from './pages/optVerification/OptVerification';
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/ownerPage" element={<OwnerPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+
       </Routes>
     </BrowserRouter>
   )
