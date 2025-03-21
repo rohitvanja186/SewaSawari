@@ -6,4 +6,5 @@ router.route("/register").post(registerUser)
 router.route("/login").post(loginUser)
 router.route("/verifyOtp").post(verifyOtp)
 
+
 module.exports = router

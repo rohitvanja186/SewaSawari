@@ -30,6 +30,7 @@ db.sequelize = sequelize;
 db.owners = require("./ownerModel.js")(sequelize, DataTypes);
 db.users = require("./userModel.js")(sequelize, DataTypes);
 db.otps = require("./otpModel.js")(sequelize, DataTypes);
+db.vehicles = require("./vehicleModel.js")(sequelize, DataTypes);
 
 // Relationship
 db.users.hasMany(db.owners)
@@ -38,6 +39,9 @@ db.owners.belongsTo(db.users)
 //otp and user relationship
 db.users.hasMany(db.otps)
 db.otps.belongsTo(db.users)
+
+db.users.hasMany(db.vehicles)
+db.vehicles.belongsTo(db.users)
 
 // Sync and seed admin
 db.sequelize.sync({ force: false }).then(async () => {

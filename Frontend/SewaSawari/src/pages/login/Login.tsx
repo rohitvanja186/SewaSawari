@@ -7,6 +7,7 @@ import axios from 'axios';
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
@@ -47,6 +48,13 @@ const LoginPage = () => {
       // // Handle success (e.g., save token, redirect user)
       // Example: localStorage.setItem('token', response.data.token);
     } catch (error) {
+
+      if(error.response.status == 403)
+      {
+
+        toast.error("Admit hasn't approved this account yet! Try again later.");
+        console.log("Not congibibiy")
+      }
       console.error('Login failed:', error.response?.data || error.message);
       // Handle error (e.g., show error message to user)
     } finally {
