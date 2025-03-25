@@ -127,7 +127,7 @@ const Dashboard: React.FC = () => {
   const handleAccept = async (id :number) => {
     try {
       // Show loading for this specific card (in a real app)
-      await axios.post(`http://localhost:3000/admin/acceptOwner/${id}`);
+      await axios.post(`http://localhost:5000/admin/acceptOwner/${id}`);
       // Success notification would be shown here
       fetchOwners();
     } catch (err) {
@@ -138,7 +138,7 @@ const Dashboard: React.FC = () => {
 
   const handleReject = async (id: number) => {
     try {
-      await axios.post(`http://localhost:3000/admin/rejectOwner/${id}`);
+      await axios.post(`http://localhost:5000/admin/rejectOwner/${id}`);
       // Success notification would be shown here
       fetchOwners();
     } catch (err) {
@@ -150,7 +150,7 @@ const Dashboard: React.FC = () => {
   const fetchOwners = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:3000/admin/getOwners");
+      const response = await axios.get("http://localhost:5000/admin/getOwners");
       setOwners(response.data);
       setError(null);
     } catch (err) {

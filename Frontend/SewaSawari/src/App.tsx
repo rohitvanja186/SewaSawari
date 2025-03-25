@@ -7,6 +7,9 @@ import Home from './pages/home/Home';
 import OwnerPage from './pages/ownerPage/OwnerPage';
 import Dashboard from './pages/dashboard/Dashboard';
 import OtpVerification from './pages/optVerification/OptVerification';
+import Rental from './pages/rental/rental';
+import Vehicledetails from './pages/VehicleDetails/Vehicledetails';
+import Success from './components/Success';
 
 
 function App() {
@@ -21,6 +24,9 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/ownerPage" element={<OwnerPage />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/rental" element={<Rental />} />
+        <Route path="/rental/:id" element={<Vehicledetails />} />
+        <Route path="/success" element={<Success />} />
 
       </Routes>
     </BrowserRouter>

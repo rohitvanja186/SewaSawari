@@ -92,6 +92,8 @@ exports.loginUser = async (req, res) => {
 exports.verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
+
+    console.log(req.body)
     if (!otp) {
       return res.status(400).json({ message: "OTP is required." });
     }

@@ -5,13 +5,15 @@ const sendVerificationEmail = async (options) => {
        service: "gmail",
 
        auth : {
-           user: process.env.EMAIL,
-           pass: process.env.EMAIL_PASSWORD,
+        //    user: process.env.EMAIL,
+        //    pass: process.env.EMAIL_PASSWORD,
+        user: "rohitvanja865@gmail.com",
+        pass: "stto nwsz cfnr zmmn",
        }
    });
 
    const mailOptions = {
-       from: "Rohit magar <rohitmagar570@gmail.com>",
+       from: "Rohit magar <rohitvanja865@gmail.com>",
        to: options.email,
        subject: options.subject,
        text: options.message

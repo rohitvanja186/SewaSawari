@@ -19,7 +19,7 @@ const LoginPage = () => {
 
     try {
       // API call to login
-      const response = await axios.post('http://localhost:3000/login',
+      const response = await axios.post('http://localhost:5000/login',
         {
           email : values.email,
           password : values.password
@@ -35,7 +35,7 @@ const LoginPage = () => {
 
     if(Role == "Renter")
     {
-      navigateTo("/home")
+      toast.info("You Have been Loggedin")
     }
     else if(Role == "Vehicle Owner")
     {

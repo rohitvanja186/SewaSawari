@@ -15,7 +15,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ userId, Purpose }) =>
   const handleVerify = async (values: { otp: string }) => {
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:3000/verifyOtp", {
+      const response = await axios.post("http://localhost:5000/verifyOtp", {
         otp: values.otp,
         userId: userId,
         purpose: Purpose, 

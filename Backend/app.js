@@ -27,6 +27,6 @@ app.use("/owner", ownerRoute);
 
 
 // server listening
-app.listen (3000, () => {
-    console.log("the project started in 3000 port")
+app.listen (5000, () => {
+    console.log("the project started in 5000 port")
 })

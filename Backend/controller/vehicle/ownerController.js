@@ -1,5 +1,6 @@
 const fs = require("fs");
-const { vehicles, owners } = require("../../model"); // Importing models
+const { vehicles, owners, users, bookings} = require("../../model"); // Importing models
+const { default: axios } = require("axios");
 
 exports.addVehicle = async (req, res) => {
     try {
@@ -35,7 +36,7 @@ exports.addVehicle = async (req, res) => {
 
         // Create a new vehicle record and associate it with the owner
         const newVehicle = await vehicles.create({
-            user_id: userId, // Associate vehicle with the owner using the userId
+            userId: userId, // Associate vehicle with the owner using the userId
             vehicle_name: name,  // Map `name` to `vehicle_name`
             year: year,
             price: price,
@@ -55,3 +56,140 @@ exports.addVehicle = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
+
+
+exports.getVehicles = async (req, res) => {
+    try {
+
+    
+        const vehicleList = await vehicles.findAll({
+            include: {
+                model: users,
+            }
+        })
+
+
+        console.log(vehicleList);
+
+        res.status(200).json({ message: "Vehicles retrieved successfully!", vehicles: vehicleList });
+    } catch (error) {
+        console.error("Error fetching vehicles:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+
+exports.getVehicleDetails = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+ 
+      const vehicleDetails = await vehicles.findOne({
+        where: { id },
+        include: {
+          model: users, 
+        
+        }
+      });
+  
+   
+      if (!vehicleDetails) {
+        return res.status(404).json({ message: 'Vehicle not found' });
+      }
+  
+  
+      return res.status(200).json(vehicleDetails);
+      
+    } catch (error) {
+     
+      console.error(error);
+  
+    
+      return res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }
+  };
+
+  exports.initiatePayment = async(req,res)=>
+  {
+    try {
+        const { orderId, amount} = req.body;
+        
+        if (!orderId || !amount) {
+          return res.status(400).json({
+            message: "Please provide orderId and amount"
+          });
+        }
+        
+        const data = {
+          return_url: "http://localhost:5173/success",
+          purchase_order_id: orderId,
+          amount: amount * 100,
+          purchase_order_name: "Rent Vehicle",
+          website_url: "http://localhost:5173/"
+        };
+        
+        const response = await axios.post(
+          "https://a.khalti.com/api/v2/epayment/initiate/",
+          data,
+          {
+            headers: {
+              "Authorization": "key 3fb3d001f89c4fd7965e13ed9f96c6eb"
+            }
+          }
+        );
+        
+    
+        console.log(response.data);
+        // Return the response from Khalti to your client
+        return res.status(200).json(response.data);
+        
+      } catch (error) {
+        console.error("Payment initiation error:", error);
+        
+        // Return a formatted error response
+        return res.status(error.response?.status || 500).json({
+          message: "Failed to initiate payment",
+          error: error.response?.data || error.message
+        });
+      } 
+  }
+
+
+ 
+  
+exports.ConfirmBooking = async (req, res) => {
+    const { pickup_date, pickup_time, return_date, return_time, price_per_day, userid, vehicleId, number_of_days} = req.body;
+  
+
+ console.log("vehicleid", vehicleId)
+    // Calculate the total price
+    const total_price = price_per_day * number_of_days;
+  
+    try {
+      // Create a new booking
+      const booking = await bookings.create({
+        pickup_date,
+        pickup_time,
+        return_date,
+        return_time,
+        price_per_day,
+        number_of_days: number_of_days,
+        total_price,
+        status: 'Completed', 
+        payment_status: 'Paid', 
+        userId: userid, 
+        VehicleId: vehicleId, 
+      });
+  
+      return res.status(201).json({
+        message: 'Booking confirmed successfully!',
+        booking,
+      });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        message: 'Error confirming booking.',
+        error: error.message,
+      });
+    }
+  };
