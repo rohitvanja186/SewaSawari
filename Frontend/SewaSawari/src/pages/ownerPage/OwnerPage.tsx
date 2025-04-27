@@ -151,6 +151,7 @@ const OwnerPage: React.FC = () => {
             <SettingsIcon className="h-5 w-5 mr-3" />
             <span>Settings</span>
           </div>
+          
           <div className="flex items-center px-6 py-3 cursor-pointer hover:bg-indigo-700 mt-20">
             <LogOut className="h-5 w-5 mr-3" />
             <span>Logout</span>

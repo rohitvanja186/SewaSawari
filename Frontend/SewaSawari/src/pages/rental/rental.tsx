@@ -4,6 +4,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Car, MapPin, Calendar, Gauge, DollarSign, Fuel, Settings } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
+import Footer from '../../components/Footer/footer';
 
 const Rental = () => {
   const [vehicles, setVehicles] = useState([]);
@@ -140,6 +141,7 @@ const Rental = () => {
           </motion.div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };

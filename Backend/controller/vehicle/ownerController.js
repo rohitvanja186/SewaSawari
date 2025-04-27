@@ -1,6 +1,7 @@
 const fs = require("fs");
 const { vehicles, owners, users, bookings} = require("../../model"); // Importing models
 const { default: axios } = require("axios");
+const db = require("../../model");
 
 exports.addVehicle = async (req, res) => {
     try {
@@ -190,6 +191,44 @@ exports.ConfirmBooking = async (req, res) => {
       return res.status(500).json({
         message: 'Error confirming booking.',
         error: error.message,
+      });
+    }
+  };
+
+  exports.getVehiclesByUserId = async (req, res) => {
+    try {
+      const { userId } = req.params;
+
+      console.log(req.params)
+      
+      const vehicleDetails = await db.vehicles.findAll({
+        where: { 
+          userId: userId 
+        },
+        include: [{
+          model: db.users,
+          
+        }]
+      });
+      
+      if (vehicleDetails.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "No vehicles found for this user"
+        });
+      }
+      
+      return res.status(200).json({
+        success: true,
+        data: vehicleDetails,
+        message: "Vehicles retrieved successfully"
+      });
+    } catch (error) {
+      console.error("Error retrieving vehicles:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: error.message
       });
     }
   };

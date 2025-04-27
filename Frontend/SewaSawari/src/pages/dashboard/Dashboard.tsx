@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
 import {
   Home,
   Users,
@@ -22,9 +23,11 @@ import {
   Plus,
   RefreshCw,
   Filter,
-  MoreHorizontal
+  MoreHorizontal,
+  LogOut
 } from 'lucide-react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import for navigation
 
 // Types
 interface SubMenuItem {
@@ -100,6 +103,7 @@ const menuItems: MenuItem[] = [
 ];
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate(); // Initialize the navigate function
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const [expandedMenuId, setExpandedMenuId] = useState<number | null>(null);
   const [owners, setOwners] = useState<OwnerData[]>([]);
@@ -122,6 +126,18 @@ const Dashboard: React.FC = () => {
   const handleMenuClick = (path: string): void => {
     console.log(`Navigating to: ${path}`);
     // Add your navigation logic here
+  };
+
+  // Logout function
+  const handleLogout = (): void => {
+     Cookies.remove("Token");
+    
+ 
+    
+    // Redirect to login page
+    navigate('/');
+    
+    console.log('User logged out successfully');
   };
 
   const handleAccept = async (id :number) => {
@@ -308,6 +324,27 @@ const Dashboard: React.FC = () => {
               )}
             </div>
           ))}
+          
+          {/* Logout Button */}
+          <div className="mb-1 mt-4">
+            <div
+              onClick={handleLogout}
+              className="
+                flex items-center px-4 py-3 cursor-pointer
+                hover:bg-red-700 rounded-lg transition-colors
+                bg-red-600
+              "
+            >
+              <div className="flex items-center flex-1">
+                <span className="mr-3 text-white">
+                  <LogOut className="w-5 h-5" />
+                </span>
+                {isSidebarOpen && (
+                  <span className="text-sm font-medium">Logout</span>
+                )}
+              </div>
+            </div>
+          </div>
         </nav>
       </div>
 
@@ -342,12 +379,19 @@ const Dashboard: React.FC = () => {
               </button>
               <div className="flex items-center space-x-3 border-l pl-5 border-gray-200">
                 <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-medium">
-                  JD
+                  RM
                 </div>
                 <div>
-                  <span className="font-medium text-sm">John Doe</span>
+                  <span className="font-medium text-sm">Rohit Magar</span>
                   <p className="text-xs text-gray-500">Administrator</p>
                 </div>
+                {/* Logout button in the top navbar */}
+                <button
+                  onClick={handleLogout}
+                  className="ml-4 p-2 rounded-lg hover:bg-red-50 text-red-600 flex items-center"
+                >
+                  <LogOut size={18} />
+                </button>
               </div>
             </div>
           </div>
@@ -472,14 +516,7 @@ const Dashboard: React.FC = () => {
                           <p className="text-xs text-gray-500">Contact Number</p>
                         </div>
                       </div>
-                      
-                      <div className="flex items-start">
-                        <MapPin size={16} className="mr-3 mt-0.5 text-gray-400 flex-shrink-0" />
-                        <div>
-                          <p className="text-sm font-medium text-gray-800">{owner.city}, {owner.address}</p>
-                          <p className="text-xs text-gray-500">Location</p>
-                        </div>
-                      </div>
+                  
                       
                       <div className="flex items-start">
                         <Calendar size={16} className="mr-3 mt-0.5 text-gray-400 flex-shrink-0" />
@@ -502,7 +539,7 @@ const Dashboard: React.FC = () => {
                     
                     {/* Action Buttons */}
                     <div className="flex items-center justify-between space-x-3 pt-4 border-t border-gray-100">
-                      <a href={`/owner/details/${owner.id}`} className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
+                      <a href={`/owner-details/${owner.id}`} className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center">
                         <ExternalLink size={14} className="mr-1" />
                         View Details
                       </a>

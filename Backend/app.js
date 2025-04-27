@@ -7,6 +7,7 @@ require("dotenv").config()
 const authRoute = require("./routes/authRoute")
 const adminRoute = require("./routes/adminRoute")
 const ownerRoute = require("./routes/ownerRoute")
+const mapRoute = require("./routes/mapRoute")
 
 // database connection
 require("./model/index")
@@ -24,6 +25,7 @@ app.use(express.static('uploads/'))
 app.use("", authRoute);
 app.use("/admin", adminRoute);
 app.use("/owner", ownerRoute);
+app.use("/map", mapRoute);
 
 
 // server listening

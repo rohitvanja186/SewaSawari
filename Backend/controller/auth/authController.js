@@ -4,7 +4,17 @@ const jwt = require("jsonwebtoken");
 const OtpEmail = require("../../services/sendEmail");
 
 exports.registerUser = async (req, res) => {
-  const { full_name, email, phone_number, password, role, business_name, address, city, operating_hours } = req.body;
+  const { 
+    full_name, 
+    email, 
+    phone_number, 
+    password, 
+    role, 
+    business_name, 
+    description, 
+    location, // This will contain latitude and longitude
+    operating_hours 
+  } = req.body;
   
   try {
     if (!full_name || !email || !phone_number || !password) {
@@ -23,20 +33,30 @@ exports.registerUser = async (req, res) => {
     
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await users.create({
-      full_name, email, phone_number, password: hashedPassword,
+      full_name, 
+      email, 
+      phone_number, 
+      password: hashedPassword,
       role: role || "Renter"
     });
 
     if (role === "Vehicle Owner") {
-      if (!business_name || !address || !city) {
-        return res.status(400).json({ message: "Vehicle Owner registration requires business_name, address, and city." });
+      if (!business_name || !description || !location || !location.latitude || !location.longitude) {
+        return res.status(400).json({ 
+          message: "Vehicle Owner registration requires business_name, description, and location (latitude/longitude)." 
+        });
       }
+      
       await owners.create({
-        business_name, address, city,
+        business_name,
+        description,
+        latitude: location.latitude,
+        longitude: location.longitude,
         operating_hours: operating_hours || null,
         userId: user.id,
         email_confirm: false
       });
+      
       return res.status(201).json({ message: "Vehicle owner sent for verification." });
     }
     
@@ -50,12 +70,13 @@ exports.registerUser = async (req, res) => {
 
     await OtpEmail({ email: user.email, subject: "Email verification OTP", otp: generatedOtp });
     return res.status(201).json({ message: "User registered successfully. Please verify your email." });
-
+    
   } catch (error) {
     console.error("Error registering user:", error);
     return res.status(500).json({ message: "An error occurred while registering the user." });
   }
 };
+
 
 exports.loginUser = async (req, res) => {
   const { email, password } = req.body;
