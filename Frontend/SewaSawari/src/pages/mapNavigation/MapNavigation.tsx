@@ -426,9 +426,7 @@ const MapNavigation = () => {
                     {filteredStores.map(store => (
                       <div key={store.id} className="border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex">
-                          <div className="w-1/3">
-                            <img src={store.image} alt={store.business_name} className="w-full h-full object-cover" />
-                          </div>
+                      
                           <div className="w-2/3 p-4">
                             <div className="flex justify-between items-start">
                               <h3 className="text-lg font-semibold">{store.business_name}</h3>
@@ -472,7 +470,9 @@ const MapNavigation = () => {
                               <p className="text-sm text-gray-500 mt-2">No vehicles available</p>
                             )}
                             
-                            <div className="mt-4 flex justify-end">
+                          
+                          </div>
+                          <div className=" flex items-center justify-end ">
                               <NavLink to={`/owners/${store.userId}`}>
                                 <button 
                                   className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 text-sm"
@@ -481,7 +481,6 @@ const MapNavigation = () => {
                                 </button>
                               </NavLink>
                             </div>
-                          </div>
                         </div>
                       </div>
                     ))}

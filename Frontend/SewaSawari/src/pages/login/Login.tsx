@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './../../components/Navbar/navbar';
 import loginRegister from '../../assets/image/loginRegister.jpg';
 import { Form, Input, Button, Divider } from 'antd';
@@ -8,58 +8,87 @@ import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import toastify styles
 
 const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const navigateTo = useNavigate();
+
+  useEffect(() => {
+    // Check if user was redirected here after registration
+    const registrationSuccess = sessionStorage.getItem('registrationSuccess');
+    if (registrationSuccess) {
+      toast.success('Registration successful! Please login with your credentials.');
+      sessionStorage.removeItem('registrationSuccess'); // Clear the flag
+    }
+  }, []);
 
   const onFinish = async (values) => {
     setLoading(true);
     console.log('Form Submitted:', values);
 
     try {
+      // Display toast notification for login attempt
+      toast.info('Logging in...', { autoClose: 2000 });
+
       // API call to login
       const response = await axios.post('http://localhost:5000/login',
         {
-          email : values.email,
-          password : values.password
+          email: values.email,
+          password: values.password
         }
       );
       console.log('Response:', response);
 
       Cookies.set('Token', response.data.token, { expires: 7 });
 
-    const token = response.data.token;
-    const decode = jwtDecode(token);
-    const Role = decode.role;
+      const token = response.data.token;
+      const decode = jwtDecode(token);
+      const Role = decode.role;
 
-    if(Role == "Renter")
-    {
-      toast.info("You Have been Loggedin")
-    }
-    else if(Role == "Vehicle Owner")
-    {
-      navigateTo("/ownerPage")
-    }
-   else
-    {
-      navigateTo("/dashboard")
-    }
-      // // Handle success (e.g., save token, redirect user)
-      // Example: localStorage.setItem('token', response.data.token);
-    } catch (error) {
-
-      if(error.response.status == 403)
-      {
-
-        toast.error("Admit hasn't approved this account yet! Try again later.");
-        console.log("Not congibibiy")
+      if (Role == "Renter") {
+        toast.success("Login successful! Welcome back.");
+        navigateTo("/"); // Redirecting to home page for renters
       }
-      console.error('Login failed:', error.response?.data || error.message);
-      // Handle error (e.g., show error message to user)
+      else if (Role == "Vehicle Owner") {
+        toast.success("Login successful! Welcome to your owner dashboard.");
+        navigateTo("/ownerPage");
+      }
+      else {
+        toast.success("Login successful! Welcome to the admin dashboard.");
+        navigateTo("/dashboard");
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+
+      if (error.response) {
+        if (error.response.status === 403) {
+          toast.error("Admin hasn't approved this account yet! Try again later.");
+        } else if (error.response.status === 401) {
+          toast.error("Invalid email or password. Please try again.");
+        } else if (error.response.status === 404) {
+          toast.error("Account not found. Please register first.");
+        } else {
+          toast.error("Login failed. Please try again later.");
+        }
+      } else if (error.request) {
+        toast.error("Network error. Please check your connection and try again.");
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    toast.info("Google sign-in functionality is coming soon!");
+  };
+
+  const handleForgotPassword = (e) => {
+    e.preventDefault();
+    toast.info("Password reset functionality is coming soon!");
+    // navigateTo("/forgot-password");
   };
 
   return (
@@ -97,7 +126,10 @@ const LoginPage = () => {
             >
               <Form.Item
                 name="email"
-                rules={[{ required: true, message: 'Please input your email!' }]}
+                rules={[
+                  { required: true, message: 'Please input your email!' },
+                  { type: 'email', message: 'Please enter a valid email address!' }
+                ]}
               >
                 <Input
                   size="large"
@@ -109,7 +141,10 @@ const LoginPage = () => {
               <Form.Item
                 name="password"
                 className="mb-2"
-                rules={[{ required: true, message: 'Please input your password!' }]}
+                rules={[
+                  { required: true, message: 'Please input your password!' },
+                  { min: 6, message: 'Password must be at least 6 characters!' }
+                ]}
               >
                 <Input.Password
                   size="large"
@@ -122,7 +157,11 @@ const LoginPage = () => {
               </Form.Item>
 
               <div className="text-right mb-6">
-                <a href="/forgot-password" className="text-red-500 hover:text-red-600 text-sm">
+                <a 
+                  href="#" 
+                  onClick={handleForgotPassword} 
+                  className="text-red-500 hover:text-red-600 text-sm"
+                >
                   Forget password?
                 </a>
               </div>
@@ -151,13 +190,18 @@ const LoginPage = () => {
                 size="large"
                 icon={<GoogleOutlined />}
                 className="h-12 flex items-center justify-center"
+                onClick={handleGoogleSignIn}
               >
                 Sign in with Google
               </Button>
 
               <div className="text-center mt-6 text-sm text-gray-600">
                 Don't have an account?{' '}
-                <a href="/register" className="text-red-500 hover:text-red-600">
+                <a 
+                  href="/register" 
+                  className="text-red-500 hover:text-red-600"
+                  onClick={() => toast.info("Redirecting to registration page...")}
+                >
                   Sign up
                 </a>
               </div>

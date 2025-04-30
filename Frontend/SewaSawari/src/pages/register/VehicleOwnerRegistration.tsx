@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Form, Input, Button, Divider, TimePicker, message, Spin, Row, Col } from 'antd';
+import { Form, Input, Button, Divider, TimePicker, Spin, Row, Col } from 'antd';
 import { UserOutlined, ShopOutlined, MailOutlined, PhoneOutlined, LockOutlined, GoogleOutlined, ZoomInOutlined, ZoomOutOutlined, SearchOutlined } from '@ant-design/icons';
 import Navbar from './../../components/Navbar/navbar';
 import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Fix for Leaflet marker icon issue
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -85,6 +87,7 @@ const LocationMarker = ({ position, setPosition }) => {
           const marker = e.target;
           const position = marker.getLatLng();
           setPosition([position.lat, position.lng]);
+          toast.info("Location updated", { autoClose: 1500 });
         },
       }}
     />
@@ -124,13 +127,14 @@ const SearchBox = ({ setPosition }) => {
         });
         
         // Do not set position yet - let user click on the specific spot
+        toast.info("Location found. Click on the map to select exact position.", { autoClose: 3000 });
       } else {
-        message.info('No locations found. Please try a different search term.');
+        toast.warning('No locations found. Please try a different search term.');
         setSearchResults([]);
       }
     } catch (error) {
       console.error("Error searching location:", error);
-      message.error('Search failed. Please try again.');
+      toast.error('Search failed. Please try again.');
     } finally {
       setSearching(false);
     }
@@ -147,6 +151,7 @@ const SearchBox = ({ setPosition }) => {
     
     // Close search results dropdown
     setSearchResults([]);
+    toast.info(`Showing ${result.display_name.split(',')[0]}. Click on map to select exact location.`, { autoClose: 2000 });
   };
 
   return (
@@ -230,18 +235,21 @@ const VehicleOwnerRegister = () => {
 
   const handleSubmit = async (values) => {
     if (!position) {
-      message.error("Please select your business location on the map");
+      toast.error("Please select your business location on the map");
       return;
     }
     
     // Check required fields for vehicle owner
     if (!values.businessName || !values.description) {
-      message.error("Business name and description are required for vehicle owners");
+      toast.error("Business name and description are required for vehicle owners");
       return;
     }
     
     setLoading(true);
     try {
+      // Show toast when form is submitted
+      toast.info("Submitting your business information...", { autoClose: 2000 });
+      
       // Format data according to controller requirements
       const requestData = {
         full_name: values.fullName,
@@ -264,16 +272,50 @@ const VehicleOwnerRegister = () => {
       const response = await axios.post("http://localhost:5000/register", requestData);
 
       if(response.status === 201) {
-        message.success(response.data.message || "Registration successful! Waiting for verification.");
-        navigateTo('/login');
+        // Success toast with message about admin approval
+        toast.success("Registration submitted successfully! Your account is pending admin approval. Please check your email for updates.", { 
+          autoClose: 5000 
+        });
+        
+        // Redirect after a short delay to allow user to read the message
+        setTimeout(() => navigateTo('/login'), 2000);
       }
     } catch (error) {
       console.error('Error during registration:', error);
-      const errorMessage = error.response?.data?.message || "Registration failed. Please try again.";
-      message.error(errorMessage);
+      
+      // Handle different error scenarios with specific toast messages
+      if (error.response) {
+        if (error.response.status === 409) {
+          toast.error("Email or phone number already exists. Please use a different one.");
+        } else if (error.response.status === 400) {
+          toast.error("Invalid input. Please check your information and try again.");
+        } else {
+          toast.error(error.response?.data?.message || "Registration failed. Please try again later.");
+        }
+      } else if (error.request) {
+        toast.error("Network error. Please check your connection and try again.");
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoogleSignUp = () => {
+    toast.info("Google sign-up functionality is coming soon!");
+  };
+
+  const navigateToLogin = (e) => {
+    e.preventDefault();
+    toast.info("Redirecting to login page...");
+    setTimeout(() => navigateTo("/login"), 1000);
+  };
+
+  const navigateToRenterRegister = (e) => {
+    e.preventDefault();
+    toast.info("Redirecting to renter registration...");
+    setTimeout(() => navigateTo("/register"), 1000);
   };
 
   return (
@@ -287,7 +329,11 @@ const VehicleOwnerRegister = () => {
             <h2 className="text-3xl font-bold">Create your business account</h2>
             <p className="mt-2 text-gray-600">
               Looking to rent a vehicle?{' '}
-              <a href="/register" className="text-red-500 hover:text-red-600">
+              <a 
+                href="/register" 
+                className="text-red-500 hover:text-red-600"
+                onClick={navigateToRenterRegister}
+              >
                 Register here
               </a>
             </p>
@@ -312,6 +358,10 @@ const VehicleOwnerRegister = () => {
                     placeholder="Full Name"
                     prefix={<UserOutlined />}
                     className="py-2"
+                    onChange={() => {
+                      // Clear any previous toast errors when user starts typing
+                      toast.dismiss();
+                    }}
                   />
                 </Form.Item>
               </Col>
@@ -327,6 +377,9 @@ const VehicleOwnerRegister = () => {
                     placeholder="Business/Store Name"
                     prefix={<ShopOutlined />}
                     className="py-2"
+                    onChange={() => {
+                      toast.dismiss();
+                    }}
                   />
                 </Form.Item>
               </Col>
@@ -347,6 +400,9 @@ const VehicleOwnerRegister = () => {
                     placeholder="Email Address"
                     prefix={<MailOutlined />}
                     className="py-2"
+                    onChange={() => {
+                      toast.dismiss();
+                    }}
                   />
                 </Form.Item>
               </Col>
@@ -362,6 +418,9 @@ const VehicleOwnerRegister = () => {
                     placeholder="Phone Number"
                     prefix={<PhoneOutlined />}
                     className="py-2"
+                    onChange={() => {
+                      toast.dismiss();
+                    }}
                   />
                 </Form.Item>
               </Col>
@@ -376,6 +435,9 @@ const VehicleOwnerRegister = () => {
                 placeholder="Describe your business, services offered, etc."
                 rows={3}
                 className="py-2"
+                onChange={() => {
+                  toast.dismiss();
+                }}
               />
             </Form.Item>
 
@@ -478,13 +540,18 @@ const VehicleOwnerRegister = () => {
               size="large"
               icon={<GoogleOutlined />}
               className="h-12 flex items-center justify-center"
+              onClick={handleGoogleSignUp}
             >
               Sign up with Google
             </Button>
 
             <div className="text-center mt-6 text-sm text-gray-600">
               Already have an account?{' '}
-              <a href="/login" className="text-red-500 hover:text-red-600">
+              <a 
+                href="/login" 
+                className="text-red-500 hover:text-red-600" 
+                onClick={navigateToLogin}
+              >
                 Log in
               </a>
             </div>

@@ -75,7 +75,7 @@ const AboutUs = () => {
     <div className="bg-gray-50">
       <Navbar />
       {/* Hero Section */}
-      <div className="bg-blue-600 text-white py-20">
+      <div className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white py-20">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">About SewaSawari</h1>
           <p className="text-xl md:text-2xl max-w-3xl mx-auto">
@@ -90,7 +90,7 @@ const AboutUs = () => {
           <Col xs={24} lg={12}>
             <h2 className="text-3xl font-bold mb-6">Our Story</h2>
             <p className="text-gray-700 mb-4">
-              SewaSawari began with a simple observation: transportation in Nepal could be more accessible, affordable, and reliable. In 2018, our founder Rajesh Sharma set out to change the vehicle rental landscape across the country.
+              SewaSawari began with a simple observation: transportation in Nepal could be more accessible, affordable, and reliable. In 2018, our founder Sneha Magar set out to change the vehicle rental landscape across the country.
             </p>
             <p className="text-gray-700 mb-4">
               Starting with just 10 vehicles in Kathmandu, we focused on exceptional customer service and well-maintained vehicles. Our commitment to quality quickly earned us a reputation as the most trusted vehicle rental service in the region.
@@ -101,7 +101,7 @@ const AboutUs = () => {
           </Col>
           <Col xs={24} lg={12} className="flex justify-center">
             <div className="rounded-lg overflow-hidden shadow-lg">
-              <img src="/api/placeholder/600/400" alt="SewaSawari Team" className="w-full h-auto" />
+              <img src="https://static.vecteezy.com/system/resources/thumbnails/013/577/994/small_2x/starting-new-working-day-as-a-team-top-view-of-group-of-six-young-people-holding-hands-together-and-smile-while-sitting-at-the-office-desk-photo.jpg" alt="SewaSawari Team" className="w-full h-auto" />
             </div>
           </Col>
         </Row>
@@ -122,7 +122,7 @@ const AboutUs = () => {
               <Card className="h-full shadow-md hover:shadow-lg transition-shadow">
                 <div className="text-center">
                   <div className="flex justify-center mb-4">
-                    <CarOutlined style={{ fontSize: '48px', color: '#3B82F6' }} />
+                    <CarOutlined style={{ fontSize: '48px', color: '#10B981' }} />
                   </div>
                   <h3 className="text-xl font-bold mb-2">Reliability</h3>
                   <p className="text-gray-600">
@@ -135,7 +135,7 @@ const AboutUs = () => {
               <Card className="h-full shadow-md hover:shadow-lg transition-shadow">
                 <div className="text-center">
                   <div className="flex justify-center mb-4">
-                    <SafetyCertificateOutlined style={{ fontSize: '48px', color: '#3B82F6' }} />
+                    <SafetyCertificateOutlined style={{ fontSize: '48px', color: '#10B981' }} />
                   </div>
                   <h3 className="text-xl font-bold mb-2">Safety</h3>
                   <p className="text-gray-600">
@@ -148,7 +148,7 @@ const AboutUs = () => {
               <Card className="h-full shadow-md hover:shadow-lg transition-shadow">
                 <div className="text-center">
                   <div className="flex justify-center mb-4">
-                    <GlobalOutlined style={{ fontSize: '48px', color: '#3B82F6' }} />
+                    <GlobalOutlined style={{ fontSize: '48px', color: '#10B981' }} />
                   </div>
                   <h3 className="text-xl font-bold mb-2">Sustainability</h3>
                   <p className="text-gray-600">
@@ -169,12 +169,12 @@ const AboutUs = () => {
           {milestones.map((milestone, index) => (
             <div key={index} className="flex mb-8">
               <div className="mr-8 text-right w-24">
-                <div className="text-xl font-bold text-blue-600">{milestone.year}</div>
+                <div className="text-xl font-bold text-teal-600">{milestone.year}</div>
               </div>
               <div className="w-4 relative">
-                <div className="absolute top-2 w-4 h-4 rounded-full bg-blue-600"></div>
+                <div className="absolute top-2 w-4 h-4 rounded-full bg-teal-600"></div>
                 {index < milestones.length - 1 && (
-                  <div className="absolute top-6 bottom-0 left-1/2 w-0.5 -ml-px h-full bg-blue-300"></div>
+                  <div className="absolute top-6 bottom-0 left-1/2 w-0.5 -ml-px h-full bg-teal-300"></div>
                 )}
               </div>
               <div className="ml-8 pt-1">
@@ -198,7 +198,7 @@ const AboutUs = () => {
                     <Avatar src={member.avatar} size={100} />
                   </div>
                   <h3 className="text-xl font-semibold mb-1">{member.name}</h3>
-                  <p className="text-blue-600 mb-3">{member.position}</p>
+                  <p className="text-teal-600 mb-3">{member.position}</p>
                   <p className="text-gray-600">{member.bio}</p>
                 </Card>
               </Col>
@@ -215,7 +215,7 @@ const AboutUs = () => {
           <Col xs={24} lg={12}>
             <div className="flex items-start mb-8">
               <div className="mr-4 mt-1">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-teal-100 text-teal-600">
                   <CarOutlined style={{ fontSize: '24px' }} />
                 </div>
               </div>
@@ -229,7 +229,7 @@ const AboutUs = () => {
             
             <div className="flex items-start mb-8">
               <div className="mr-4 mt-1">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-teal-100 text-teal-600">
                   <GlobalOutlined style={{ fontSize: '24px' }} />
                 </div>
               </div>
@@ -243,7 +243,7 @@ const AboutUs = () => {
             
             <div className="flex items-start">
               <div className="mr-4 mt-1">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-teal-100 text-teal-600">
                   <TeamOutlined style={{ fontSize: '24px' }} />
                 </div>
               </div>
@@ -259,7 +259,7 @@ const AboutUs = () => {
           <Col xs={24} lg={12}>
             <div className="flex items-start mb-8">
               <div className="mr-4 mt-1">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-teal-100 text-teal-600">
                   <CustomerServiceOutlined style={{ fontSize: '24px' }} />
                 </div>
               </div>
@@ -273,7 +273,7 @@ const AboutUs = () => {
             
             <div className="flex items-start mb-8">
               <div className="mr-4 mt-1">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-teal-100 text-teal-600">
                   <SafetyCertificateOutlined style={{ fontSize: '24px' }} />
                 </div>
               </div>
@@ -287,7 +287,7 @@ const AboutUs = () => {
             
             <div className="flex items-start">
               <div className="mr-4 mt-1">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-600">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-teal-100 text-teal-600">
                   <CarOutlined style={{ fontSize: '24px' }} />
                 </div>
               </div>
@@ -303,17 +303,17 @@ const AboutUs = () => {
       </div>
 
       {/* Call to Action */}
-      <div className="bg-blue-600 text-white py-16">
+      <div className="bg-gradient-to-r from-teal-500 to-emerald-600 text-white py-16">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to Experience Nepal on Your Terms?</h2>
           <p className="text-xl max-w-3xl mx-auto mb-8">
             Whether you're planning an adventure through the Himalayas or need a reliable vehicle for daily commutes, SewaSawari has you covered.
           </p>
           <div className="flex justify-center gap-4 flex-wrap">
-            <button className="bg-white text-blue-600 px-8 py-3 rounded-md font-semibold hover:bg-gray-100 transition-colors">
+            <button className="bg-white text-teal-600 px-8 py-3 rounded-md font-semibold hover:bg-gray-100 transition-colors">
               Browse Vehicles
             </button>
-            <button className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-md font-semibold hover:bg-blue-700 transition-colors">
+            <button className="bg-transparent border-2 border-white text-white px-8 py-3 rounded-md font-semibold hover:bg-teal-700 transition-colors">
               Contact Us
             </button>
           </div>

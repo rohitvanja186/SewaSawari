@@ -1,5 +1,4 @@
 const { DataTypes } = require('sequelize');
-
 module.exports = (sequelize) => {
   const Owner = sequelize.define('owner', {
     business_name: {

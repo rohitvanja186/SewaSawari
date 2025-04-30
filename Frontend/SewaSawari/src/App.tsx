@@ -6,7 +6,6 @@ import VehicleOwnerRegister from './pages/register/VehicleOwnerRegistration';
 import Home from './pages/home/Home';
 import OwnerPage from './pages/ownerPage/OwnerPage';
 import Dashboard from './pages/dashboard/Dashboard';
-// import OtpVerification from './pages/optVerification/OptVerification';
 import Rental from './pages/rental/rental';
 import Vehicledetails from './pages/VehicleDetails/Vehicledetails';
 import Success from './components/Success';
@@ -14,6 +13,7 @@ import AboutUs from './pages/aboutUs/AboutUs';
 import ContactUs from './pages/contactUs/ContactUs';
 import OwnerDetails from './pages/ownerDetails/OwnerDetails';
 import MapNavigation from './pages/mapNavigation/MapNavigation';
+import StoreDetails from './pages/StoreDetails/StoreDetails';
 
 
 function App() {
@@ -34,6 +34,7 @@ function App() {
         <Route path="/aboutUs" element={<AboutUs />} />
         <Route path="/contactUs" element={<ContactUs />} />
         <Route path="/owner-details/:id" element={<OwnerDetails />} />
+        <Route path="/owners/:id" element={<StoreDetails />} />
 
         <Route path="/mapNavigation" element={<MapNavigation />} />
       </Routes>

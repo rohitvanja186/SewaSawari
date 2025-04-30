@@ -11,34 +11,34 @@ interface OtpVerificationProps {
 const OtpVerification: React.FC<OtpVerificationProps> = ({ userId, Purpose }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  
   const handleVerify = async (values: { otp: string }) => {
     setLoading(true);
     try {
       const response = await axios.post("http://localhost:5000/verifyOtp", {
         otp: values.otp,
         userId: userId,
-        purpose: Purpose, 
+        purpose: Purpose,
       });
-
+      
       if (response.status === 200) {
-        message.success("OTP Verified Successfully!");
+        message.success("Account created successfully! OTP verified.");
         navigate("/login"); // Redirect to login page after OTP verification
       } else {
         throw new Error("Verification failed");
       }
-    } catch (error) {
+    } catch (error: any) {
       message.error(error.response?.data?.message || "Invalid OTP. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-white">
       <div className="w-full max-w-md p-8 border rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-6">Verify OTP</h2>
-
+        
         <Form name="otpVerify" layout="vertical" onFinish={handleVerify} autoComplete="off">
           <Form.Item
             name="otp"
@@ -49,7 +49,7 @@ const OtpVerification: React.FC<OtpVerificationProps> = ({ userId, Purpose }) =>
           >
             <Input size="large" placeholder="Enter OTP" maxLength={6} />
           </Form.Item>
-
+          
           <Form.Item>
             <Button
               type="primary"

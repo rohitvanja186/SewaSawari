@@ -19,6 +19,8 @@ exports.addVehicle = async (req, res) => {
             userId
         } = req.body;
 
+console.log(req.body);
+
         // Get the filename from the uploaded file
         const filename = req.file ? req.file.filename : null;
 
@@ -199,6 +201,8 @@ exports.ConfirmBooking = async (req, res) => {
     try {
       const { userId } = req.params;
 
+      console.log("userId",userId)
+
       console.log(req.params)
       
       const vehicleDetails = await db.vehicles.findAll({
@@ -210,9 +214,11 @@ exports.ConfirmBooking = async (req, res) => {
           
         }]
       });
+
+
       
       if (vehicleDetails.length === 0) {
-        return res.status(404).json({
+        return res.status(200).json({
           success: false,
           message: "No vehicles found for this user"
         });

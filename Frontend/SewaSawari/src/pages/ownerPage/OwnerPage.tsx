@@ -1,21 +1,41 @@
+
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
-import { Search, Car, MapPin, Clipboard, Settings as SettingsIcon, User, LogOut, Plus, Image as ImageIcon, DollarSign } from 'lucide-react';
+import { Search, Car, MapPin, Settings as SettingsIcon, User, LogOut, Plus, Image as ImageIcon, DollarSign, WindArrowDown } from 'lucide-react';
 import Cookies from "js-cookie";
 import axios from 'axios';
+import { toast } from 'react-toastify';
+
+
+
+
 
 // TypeScript interfaces
 interface Vehicle {
   id: number;
-  name: string;
+  vehicle_name: string;
   year: number;
-  price: number;
+  price: string;
   location: string;
-  vehicleType: string;
+  vehicle_type: string;
   description: string;
-  image: string;
+  photo_url: string;
   mileage: number;
-  fuelType: string;
+  fuel_type: string;
   transmission: string;
+  created_at: string;
+  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
+  userId: number;
+  user?: {
+    id: number;
+    full_name: string;
+    email: string;
+    phone_number: string;
+    role: string;
+    createdAt: string;
+    updatedAt: string;
+  };
 }
 
 interface VehicleFormData {
@@ -55,54 +75,75 @@ interface AddVehicleFormProps {
 type ActiveTabType = 'dashboard' | 'add-vehicle' | 'profile' | 'settings';
 
 // Main Dashboard Component
-const OwnerPage: React.FC = () => {
+const OwnerPage = () => {
   const [activeTab, setActiveTab] = useState<ActiveTabType>('dashboard');
-  const [vehicles, setVehicles] = useState<Vehicle[]>([
-    {
-      id: 1,
-      name: "Toyota Camry",
-      year: 2022,
-      price: 25000,
-      location: "New York, NY",
-      vehicleType: 'Car',
-      description: "Excellent condition, low mileage, one owner",
-      image: "/api/placeholder/400/250",
-      mileage: 15000,
-      fuelType: "Gasoline",
-      transmission: "Automatic"
-    },
-    {
-      id: 2,
-      name: "Honda Civic",
-      year: 2021,
-      price: 22000,
-      location: "Los Angeles, CA",
-      vehicleType: 'bike',
-      description: "Well maintained, includes extended warranty",
-      image: "/api/placeholder/400/250",
-      mileage: 18500,
-      fuelType: "Gasoline",
-      transmission: "Automatic"
-    },
-    {
-      id: 3,
-      name: "Tesla Model 3",
-      year: 2023,
-      price: 48000,
-      location: "San Francisco, CA",
-      vehicleType: 'truck',
-      description: "Like new condition, premium features package",
-      image: "/api/placeholder/400/250",
-      mileage: 5200,
-      fuelType: "Electric",
-      transmission: "Automatic"
-    }
-  ]);
-  const [showAddForm, setShowAddForm] = useState<boolean>(false);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Get user ID from token
+  const token = Cookies.get("Token");
+  let userId = null;
+  
+  if(token) {
+    try {
+      const tokenParts = token.split(".");
+      const decodedPayload = JSON.parse(atob(tokenParts[1]));
+      userId = decodedPayload.id;
+    } catch (error) {
+      console.error("Failed to decode token:", error);
+    }
+  }
+
+  // Fetch vehicle data from API
+  useEffect(() => {
+
+    console.log(userId)
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`http://localhost:5000/owner/getVehicleById/${userId}`);
+        console.log(response);
+
+        if (response.data.success) {
+          setVehicles(response.data.data);  
+        } else {
+          setError("No vehicles Added till Now");
+        }
+      } catch (err) {
+        console.error("Error fetching vehicles:", err);
+        setError("Error fetching vehicles");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userId) {
+      fetchData();
+    } else {
+      setLoading(false);
+    }
+  }, [userId]);
 
   // Render correct component based on active tab
   const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      );
+    }
+    
+    if (error && activeTab === 'dashboard') {
+      return (
+        <div className="bg-red-100 p-4 rounded-lg">
+          <p className="text-red-700">{error}</p>
+        </div>
+      );
+    }
+    
     switch (activeTab) {
       case 'dashboard':
         return <Dashboard vehicles={vehicles} searchTerm={searchTerm} />;
@@ -117,15 +158,6 @@ const OwnerPage: React.FC = () => {
     }
   };
 
-  // Effect to open add vehicle form when clicking add vehicle in sidebar
-  useEffect(() => {
-    if (activeTab === 'add-vehicle') {
-      setShowAddForm(true);
-    } else {
-      setShowAddForm(false);
-    }
-  }, [activeTab]);
-
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
@@ -135,19 +167,31 @@ const OwnerPage: React.FC = () => {
           <p className="text-indigo-200 text-sm">Vehicle Owner Dashboard</p>
         </div>
         <nav className="mt-6">
-          <div className={`flex items-center px-6 py-3 cursor-pointer ${activeTab === 'dashboard' ? 'bg-indigo-900' : 'hover:bg-indigo-700'}`} onClick={() => setActiveTab('dashboard')}>
+          <div 
+            className={`flex items-center px-6 py-3 cursor-pointer ${activeTab === 'dashboard' ? 'bg-indigo-900' : 'hover:bg-indigo-700'}`} 
+            onClick={() => setActiveTab('dashboard')}
+          >
             <Car className="h-5 w-5 mr-3" />
             <span>My Vehicles</span>
           </div>
-          <div className={`flex items-center px-6 py-3 cursor-pointer ${activeTab === 'add-vehicle' ? 'bg-indigo-900' : 'hover:bg-indigo-700'}`} onClick={() => setActiveTab('add-vehicle')}>
+          <div 
+            className={`flex items-center px-6 py-3 cursor-pointer ${activeTab === 'add-vehicle' ? 'bg-indigo-900' : 'hover:bg-indigo-700'}`} 
+            onClick={() => setActiveTab('add-vehicle')}
+          >
             <Plus className="h-5 w-5 mr-3" />
             <span>Add Vehicle</span>
           </div>
-          <div className={`flex items-center px-6 py-3 cursor-pointer ${activeTab === 'profile' ? 'bg-indigo-900' : 'hover:bg-indigo-700'}`} onClick={() => setActiveTab('profile')}>
+          <div 
+            className={`flex items-center px-6 py-3 cursor-pointer ${activeTab === 'profile' ? 'bg-indigo-900' : 'hover:bg-indigo-700'}`} 
+            onClick={() => setActiveTab('profile')}
+          >
             <User className="h-5 w-5 mr-3" />
             <span>Profile</span>
           </div>
-          <div className={`flex items-center px-6 py-3 cursor-pointer ${activeTab === 'settings' ? 'bg-indigo-900' : 'hover:bg-indigo-700'}`} onClick={() => setActiveTab('settings')}>
+          <div 
+            className={`flex items-center px-6 py-3 cursor-pointer ${activeTab === 'settings' ? 'bg-indigo-900' : 'hover:bg-indigo-700'}`} 
+            onClick={() => setActiveTab('settings')}
+          >
             <SettingsIcon className="h-5 w-5 mr-3" />
             <span>Settings</span>
           </div>
@@ -175,7 +219,7 @@ const OwnerPage: React.FC = () => {
                 type="text"
                 placeholder="Search vehicles..."
                 className="px-4 py-2 pl-10 pr-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                 value={searchTerm}
               />
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
@@ -196,10 +240,26 @@ const OwnerPage: React.FC = () => {
 const Dashboard: React.FC<DashboardProps> = ({ vehicles, searchTerm }) => {
   // Filter vehicles based on search term
   const filteredVehicles = vehicles.filter(vehicle =>
-    vehicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vehicle.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vehicle.description.toLowerCase().includes(searchTerm.toLowerCase())
+    vehicle.vehicle_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    vehicle.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    vehicle.description?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Calculate average price
+  const calculateAveragePrice = () => {
+    if (vehicles.length === 0) return 0;
+    const totalPrice = vehicles.reduce((sum, vehicle) => sum + parseFloat(vehicle.price || '0'), 0);
+    return Math.round(totalPrice / vehicles.length);
+  };
+
+  // Get latest vehicle
+  const getLatestVehicle = () => {
+    if (vehicles.length === 0) return "None";
+    const sortedVehicles = [...vehicles].sort((a, b) => 
+      new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime()
+    );
+    return sortedVehicles[0].vehicle_name;
+  };
 
   return (
     <div>
@@ -211,11 +271,11 @@ const Dashboard: React.FC<DashboardProps> = ({ vehicles, searchTerm }) => {
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-gray-500 text-sm uppercase font-semibold">Average Value</h3>
-          <p className="text-3xl font-bold">${Math.round(vehicles.reduce((sum, vehicle) => sum + vehicle.price, 0) / vehicles.length).toLocaleString()}</p>
+          <p className="text-3xl font-bold">${calculateAveragePrice().toLocaleString()}</p>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <h3 className="text-gray-500 text-sm uppercase font-semibold">Latest Addition</h3>
-          <p className="text-3xl font-bold">{vehicles.length > 0 ? vehicles[vehicles.length - 1].name : "None"}</p>
+          <p className="text-3xl font-bold">{getLatestVehicle()}</p>
         </div>
       </div>
 
@@ -223,13 +283,21 @@ const Dashboard: React.FC<DashboardProps> = ({ vehicles, searchTerm }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredVehicles.map((vehicle) => (
           <div key={vehicle.id} className="bg-white rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow duration-300">
-            <img src={vehicle.image} alt={vehicle.name} className="w-full h-48 object-cover" />
+            <img 
+              src={vehicle.photo_url} 
+              alt={vehicle.vehicle_name} 
+              className="w-full h-48 object-cover" 
+              onError={(e) => {
+                // Fallback if image fails to load
+                (e.target as HTMLImageElement).src = "/api/placeholder/400/250";
+              }}
+            />
             <div className="p-6">
               <div className="flex justify-between items-start">
-                <h3 className="text-xl font-bold mb-1">{vehicle.name} ({vehicle.year})</h3>
+                <h3 className="text-xl font-bold mb-1">{vehicle.vehicle_name} ({vehicle.year})</h3>
                 <div className="flex items-center text-green-600 font-bold">
                   <DollarSign className="h-4 w-4 mr-1" />
-                  {vehicle.price.toLocaleString()}
+                  {parseFloat(vehicle.price).toLocaleString()}
                 </div>
               </div>
               <div className="flex items-center text-gray-500 mb-3">
@@ -239,7 +307,7 @@ const Dashboard: React.FC<DashboardProps> = ({ vehicles, searchTerm }) => {
               <p className="text-gray-600 mb-4">{vehicle.description}</p>
               <div className="flex justify-between text-sm text-gray-500">
                 <span>Mileage: {vehicle.mileage.toLocaleString()} mi</span>
-                <span>{vehicle.fuelType}</span>
+                <span>{vehicle.fuel_type}</span>
                 <span>{vehicle.transmission}</span>
               </div>
               <div className="mt-6 flex justify-between">
@@ -287,7 +355,8 @@ const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ setVehicles, vehicles }
   
   if(token) {
     try {
-      const decodedToken = JSON.parse(atob(token.split(".")[1]));
+      const tokenParts = token.split(".");
+      const decodedToken = JSON.parse(atob(tokenParts[1]));
       userId = decodedToken.id;
     } catch (error) {
       console.error("Failed to decode token:", error);
@@ -317,7 +386,7 @@ const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ setVehicles, vehicles }
     if (!formData.vehicleType) tempErrors.vehicleType = "Vehicle type is required";
     if (!formData.description) tempErrors.description = "Description is required";
     if (!formData.mileage) tempErrors.mileage = "Mileage is required";
-    if (!selectedFile) tempErrors.image = "Vehicle image is required";
+    if (!selectedFile && !formData.image) tempErrors.image = "Vehicle image is required";
 
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
@@ -344,7 +413,7 @@ const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ setVehicles, vehicles }
         vehicleFormData.append('mileage', formData.mileage);
         vehicleFormData.append('fuelType', formData.fuelType);
         vehicleFormData.append('transmission', formData.transmission);
-        vehicleFormData.append('userId', userId);
+        vehicleFormData.append('userId', userId.toString());
         
         // Append file if selected
         if (selectedFile) {
@@ -352,29 +421,31 @@ const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ setVehicles, vehicles }
         }
         
         // Send POST request to backend
-        const response = await axios.post('http://localhost:5000/owner/add_Vehicle', vehicleFormData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
+        const response = await axios.post('http://localhost:5000/owner/add_Vehicle', vehicleFormData);
         
         // Handle successful response
         if (response.data.vehicle) {
-          // Add the new vehicle to the state
+          // Add the new vehicle to the state with format matching API response
           const newVehicle: Vehicle = {
-            id: response.data.vehicle.id,
-            name: response.data.vehicle.name,
-            year: parseInt(response.data.vehicle.year),
-            price: parseFloat(response.data.vehicle.price),
-            location: response.data.vehicle.location,
-            vehicleType: response.data.vehicle.vehicleType,
-            description: response.data.vehicle.description,
-            image: response.data.vehicle.image,
-            mileage: parseFloat(response.data.vehicle.mileage),
-            fuelType: response.data.vehicle.fuelType,
-            transmission: response.data.vehicle.transmission
+            id: response.data.vehicle.id || Date.now(),
+            vehicle_name: formData.name,
+            year: formData.year,
+            price: formData.price,
+            location: formData.location,
+            vehicle_type: formData.vehicleType,
+            description: formData.description,
+            photo_url: formData.image,
+            mileage: parseFloat(formData.mileage),
+            fuel_type: formData.fuelType,
+            transmission: formData.transmission,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            userId: userId
           };
           
+          console.log("your userId", userId);
           setVehicles(prev => [...prev, newVehicle]);
           
           // Reset form
@@ -397,6 +468,13 @@ const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ setVehicles, vehicles }
             type: 'success',
             text: 'Vehicle added successfully!'
           });
+
+          toast.success("Vehicle Added Sucessfully")
+
+         setTimeout(() => {
+            window.location.href = "/ownerPage"
+          }, 2000); 
+         
           
           // Reset file input
           const fileInput = document.getElementById('vehicle-photo') as HTMLInputElement;
@@ -520,7 +598,7 @@ const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ setVehicles, vehicles }
               className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 ${errors.vehicleType ? 'border-red-500' : 'border-gray-300'}`}
             >
               <option value="">Select a vehicle type</option>
-              <option value="car">Car</option>
+              <option value="Car">Car</option>
               <option value="SUV">SUV</option>
               <option value="Truck">Truck</option>
               <option value="Van">Van</option>
@@ -611,6 +689,7 @@ const AddVehicleForm: React.FC<AddVehicleFormProps> = ({ setVehicles, vehicles }
     </div>
   );
 };
+
 
 
 // Profile Component Placeholder

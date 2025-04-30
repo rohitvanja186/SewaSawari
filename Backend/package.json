@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+      "test": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -21,5 +22,9 @@
     "nodemon": "^3.1.7",
     "react-router-dom": "^7.0.2",
     "sequelize": "^6.37.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-mock": "^29.7.0"
   }
 }
